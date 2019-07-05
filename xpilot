@@ -1,16 +1,15 @@
 #!/usr/bin/perl
 
 ### BEGIN INIT INFO
-# Provides:          synchronetbbs
+# Provides:          xpilot-ng-server
 # Required-Start:    $local_fs $remote_fs $network $syslog
 # Required-Stop:     $local_fs $remote_fs $network $syslog
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
-# Short-Description: Synchronet BBS service 1.0
-# Description:       Synchronet BBS service 1.0
-# Documentation:     https://synchronetbbs.org/index.php/forum/alternate-startup-scripts
+# Short-Description: Xpilot-ng-server service 1.0
+# Description:       Xpilot-ng-server service 0
+# Documentation:     https://GamePlayer.club
 # Type:              forking
-# PIDFile:           /var/run/sbbs.pid
 # X-Interactive:     false
 ### END INIT INFO
 
@@ -28,89 +27,68 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-my $SBBSDIR = "/sbbs";
-my $PIDFILE = "/var/run/sbbs.pid";
-my $pidnum = "";
-
-# Get the SBBS process pid
-if (-f $PIDFILE)
-{
-	open(INPF, "<$PIDFILE") || die "Unable to open $PIDFILE for input";
-	{
-        	local $/;
-        	$pidnum = <INPF>;
-	}
-	close(INPF);
-}
-else
-{
-	$pidnum = "nofile";
-}
+my $XPILOTDIR = "/root/myxpilot";
 
 my $Command = $ARGV[0];
-
-my $running="";
-# check if BBS process is running
-my $exists = "";
-if ($pidnum ne "nofile")
+if ($Command eq "")
 {
-	$exists = kill 0, $pidnum;
-	if ($exists)
-	{
-		$running = "running";
-	}
+	$Command = "NONE";
 }
-if (($Command eq "") || ($Command eq "start"))
+
+my $running=`ps ax|grep "xpilot-ng-server"|grep -v grep`;
+
+if ($Command eq "start")
 {
-	if ($running ne "running")
+	if ($running eq "")
 	{
-		print "Starting SBBS...\n";
-		if (-f "$SBBSDIR/nostart")
+		print "Starting xpilot-ng-server...\n";
+		if (-f "$XPILOTDIR/nostart")
 		{
-			print "Removing $SBBSDIR/nostart\n";
+			print "Removing $XPILOTDIR/nostart\n";
 			# Remove the lock file if it exists
-			unlink("$SBBSDIR/nostart");
+			unlink("$XPILOTDIR/nostart");
 		}
 		# Start the screen process
-		system("nohup $SBBSDIR/startsynchronetbbs > /tmp/SBBSStartup.log\&");
+		system("/usr/bin/nohup $XPILOTDIR/startxpilot-server > $XPILOTDIR/XpilotServerStartup.log\&");
 	}
 }
 elsif ($Command eq "stop")
 {
-	print "Stopping SBBS process...\n";
-	system("touch '$SBBSDIR/nostart'");
-	if ($running eq "running")
+	print "Stopping Xpilot Server Process...\n";
+	system("touch '$XPILOTDIR/nostart'");
+	if ($running ne "")
 	{
-		kill 'HUP', $pidnum;
+		# Process is running, kill it
+		system("killall \"xpilot-ng-server\"");
 	}
 }
 elsif ($Command eq "restart")
 {
-	if (-f "$SBBSDIR/nostart")
+	if (-f "$XPILOTDIR/nostart")
 	{
-		print("Removing $SBBSDIR/nostart\n");
-		unlink("$SBBSDIR/nostart");
+		print("Removing $XPILOTDIR/nostart\n");
+		unlink("$XPILOTDIR/nostart");
 	}
-	if ($running eq "running")
+	if ($running ne "")
 	{
-		kill 'HUP', $pidnum;
+		system("killall \"xpilot-ng-server\"");
 	}
 }
 elsif ($Command eq "status")
 {
-	if ($running eq "running")
+	if ($running ne "")
 	{
-		print("SBBS Server Running\n");
+		print("Xpilot Server Running\n");
 	}
 	else
 	{
-		print("SBBS Server Not Running\n");
+		print("Xpilot Server Not Running\n");
 	}
 }
 else
 {
 	print ("Uknown command '$Command'\n");
-	print ("Usage: $0 {start|status|stop|restart}");
+	print ("Usage: $0 {start|status|stop|restart}\n");
 	exit(1);
 }
 
