@@ -53,8 +53,12 @@ while (-1)
 			close($OUTF);
 			chdir "$XPILOTDIR";
 			print "Starting screen process\n";
-			system("$SCREENCMD -fa -S Xpilot-NG-Server -d -U -m startxpilot-server");
+			system("$SCREENCMD -fa -S Xpilot -d -U -m ./startxpilot-server");
 		}
+	}
+	else
+	{
+		print "Xpilot server already running\n";
 	}
 	# Sleep for 1 minute before checking again
 	sleep(60);

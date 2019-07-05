@@ -49,7 +49,7 @@ if ($Command eq "start")
 			unlink("$XPILOTDIR/nostart");
 		}
 		# Start the screen process
-		system("/usr/bin/nohup $XPILOTDIR/startxpilot-server > $XPILOTDIR/XpilotServerStartup.log\&");
+		system("/usr/bin/nohup $XPILOTDIR/startxpilot > $XPILOTDIR/XpilotServerStartup.log\&");
 	}
 }
 elsif ($Command eq "stop")
