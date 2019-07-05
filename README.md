@@ -1,10 +1,10 @@
 # Xpilot-ng-server Startup Scripts (1.0)
 Alternate startup scripts for the Xpilot-ng-server game - uses the "screen" command to manage session. This also restarts the server process if it crashes.
 
-Official support sites: [Official Github Repo](https://github.com/fstltna/SynchronetStartup) - [Official Forum](https://synchronetbbs.org/index.php/forum/alternate-startup-scripts) 
-![Synchronet Logo](https://SynchronetBBS.org/SynchronetLogo.png) 
+Official support sites: [Official Github Repo](https://github.com/fstltna/XpilotStartup) - [Official Forum](https://gameplayer.club/index.php/forum/operator-scripts) 
+![XPilot Sample Screen](https://gameplayer.club/images/XPilot.png) 
 
-[![Visit our IRC channel](https://kiwiirc.com/buttons/irc.synchro.net/SynchronetFans.png)](https://kiwiirc.com/client/irc.synchro.net/?nick=guest|?#SynchronetFans)
+[![Visit our IRC channel](https://kiwiirc.com/buttons/irc.freenode.net/XPilotFans.png)](https://kiwiirc.com/client/irc.freenode.net/?nick=guest|?#XPilotFans)
 
 ---
 These start up the Xpilot server at boot time with a "screen" process.
