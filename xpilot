@@ -1,0 +1,117 @@
+#!/usr/bin/perl
+
+### BEGIN INIT INFO
+# Provides:          synchronetbbs
+# Required-Start:    $local_fs $remote_fs $network $syslog
+# Required-Stop:     $local_fs $remote_fs $network $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Synchronet BBS service 1.0
+# Description:       Synchronet BBS service 1.0
+# Documentation:     https://synchronetbbs.org/index.php/forum/alternate-startup-scripts
+# Type:              forking
+# PIDFile:           /var/run/sbbs.pid
+# X-Interactive:     false
+### END INIT INFO
+
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 1, or (at your option)
+# any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+my $SBBSDIR = "/sbbs";
+my $PIDFILE = "/var/run/sbbs.pid";
+my $pidnum = "";
+
+# Get the SBBS process pid
+if (-f $PIDFILE)
+{
+	open(INPF, "<$PIDFILE") || die "Unable to open $PIDFILE for input";
+	{
+        	local $/;
+        	$pidnum = <INPF>;
+	}
+	close(INPF);
+}
+else
+{
+	$pidnum = "nofile";
+}
+
+my $Command = $ARGV[0];
+
+my $running="";
+# check if BBS process is running
+my $exists = "";
+if ($pidnum ne "nofile")
+{
+	$exists = kill 0, $pidnum;
+	if ($exists)
+	{
+		$running = "running";
+	}
+}
+if (($Command eq "") || ($Command eq "start"))
+{
+	if ($running ne "running")
+	{
+		print "Starting SBBS...\n";
+		if (-f "$SBBSDIR/nostart")
+		{
+			print "Removing $SBBSDIR/nostart\n";
+			# Remove the lock file if it exists
+			unlink("$SBBSDIR/nostart");
+		}
+		# Start the screen process
+		system("nohup $SBBSDIR/startsynchronetbbs > /tmp/SBBSStartup.log\&");
+	}
+}
+elsif ($Command eq "stop")
+{
+	print "Stopping SBBS process...\n";
+	system("touch '$SBBSDIR/nostart'");
+	if ($running eq "running")
+	{
+		kill 'HUP', $pidnum;
+	}
+}
+elsif ($Command eq "restart")
+{
+	if (-f "$SBBSDIR/nostart")
+	{
+		print("Removing $SBBSDIR/nostart\n");
+		unlink("$SBBSDIR/nostart");
+	}
+	if ($running eq "running")
+	{
+		kill 'HUP', $pidnum;
+	}
+}
+elsif ($Command eq "status")
+{
+	if ($running eq "running")
+	{
+		print("SBBS Server Running\n");
+	}
+	else
+	{
+		print("SBBS Server Not Running\n");
+	}
+}
+else
+{
+	print ("Uknown command '$Command'\n");
+	print ("Usage: $0 {start|status|stop|restart}");
+	exit(1);
+}
+
+exit(0);
